@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub - Premium Gaming Experience</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #4ecdc4;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #4ecdc4;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(78, 205, 196, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .game-description {
+            opacity: 0.8;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Game View */
+        .game-view {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .game-view.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .game-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .game-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Snake Game */
+        .snake-game {
+            display: grid;
+            grid-template-columns: repeat(20, 20px);
+            gap: 1px;
+            background: #000;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .snake-cell {
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 2px;
+        }
+
+        .snake-cell.snake {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+
+        .snake-cell.food {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            animation: pulse 1s infinite;
+        }
+
+        /* Memory Game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 80px);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .memory-card {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-card.flipped {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            animation: matchPulse 0.5s ease;
+        }
+
+        /* Tetris Game */
+        .tetris-game {
+            display: grid;
+            grid-template-columns: repeat(10, 25px);
+            gap: 1px;
+            background: #000;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .tetris-cell {
+            width: 25px;
+            height: 25px;
+            background: #222;
+            border-radius: 2px;
+        }
+
+        .tetris-cell.filled {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+        }
+
+        /* Pong Game */
+        .pong-game {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            background: #000;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .pong-paddle {
+            position: absolute;
+            width: 10px;
+            height: 80px;
+            background: #fff;
+            border-radius: 5px;
+        }
+
+        .pong-ball {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.8);
+        }
+
+        /* Tic Tac Toe */
+        .ttt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .ttt-cell {
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 10px;
+            font-size: 3rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ttt-cell:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .ttt-cell.x {
+            color: #ff6b6b;
+        }
+
+        .ttt-cell.o {
+            color: #4ecdc4;
+        }
+
+        /* Game Controls */
+        .game-controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .game-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes matchPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .games-grid { grid-template-columns: 1fr; }
+            .pong-game { width: 100%; max-width: 400px; }
+            .snake-game { grid-template-columns: repeat(15, 15px); }
+            .snake-cell { width: 15px; height: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🎮 GameHub</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#games">Games</a></li>
+                <li><a href="#leaderboard">Leaderboard</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section id="home" class="hero">
+            <h1>Welcome to GameHub</h1>
+            <p>Experience the ultimate collection of premium browser games</p>
+        </section>
+
+        <section id="games-list">
+            <div class="games-grid" id="gamesGrid">
+                <div class="game-card" onclick="loadGame('snake')">
+                    <span class="game-icon">🐍</span>
+                    <h3 class="game-title">Snake</h3>
+                    <p class="game-description">Classic snake game with modern graphics</p>
+                    <div class="game-stats">
+                        <span>👥 1.2k plays</span>
+                        <span>⭐ 4.8/5</span>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="loadGame('memory')">
+                    <span class="game-icon">🧠</span>
+                    <h3 class="game-title">Memory Match</h3>
+                    <p class="game-description">Test your memory with this matching game</p>
+                    <div class="game-stats">
+                        <span>👥 890 plays</span>
+                        <span>⭐ 4.6/5</span>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="loadGame('tetris')">
+                    <span class="game-icon">🟦</span>
+                    <h3 class="game-title">Block Drop</h3>
+                    <p class="game-description">Strategic block stacking puzzle game</p>
+                    <div class="game-stats">
+                        <span>👥 2.1k plays</span>
+                        <span>⭐ 4.9/5</span>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="loadGame('pong')">
+                    <span class="game-icon">🏓</span>
+                    <h3 class="game-title">Pong</h3>
+                    <p class="game-description">Classic arcade tennis game</p>
+                    <div class="game-stats">
+                        <span>👥 650 plays</span>
+                        <span>⭐ 4.5/5</span>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="loadGame('tictactoe')">
+                    <span class="game-icon">❌⭕</span>
+                    <h3 class="game-title">Tic Tac Toe</h3>
+                    <p class="game-description">Strategic noughts and crosses game</p>
+                    <div class="game-stats">
+                        <span>👥 1.8k plays</span>
+                        <span>⭐ 4.7/5</span>
+                    </div>
+                </div>
+
+                <div class="game-card" onclick="loadGame('coming-soon')">
+                    <span class="game-icon">🚀</span>
+                    <h3 class="game-title">More Games</h3>
+                    <p class="game-description">New games coming soon!</p>
+                    <div class="game-stats">
+                        <span>👥 Soon</span>
+                        <span>⭐ TBA</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Views -->
+        <div id="gameView" class="game-view">
+            <button class="game-back" onclick="backToGames()">← Back to Games</button>
+            <h2 id="gameTitle"></h2>
+            <div id="gameContainer" class="game-container"></div>
+            <div id="gameControls" class="game-controls"></div>
+        </div>
+    </div>
+
+    <script>
+        // URL Routing System
+        function handleRouting() {
+            const path = window.location.pathname;
+            const gameMatch = path.match(/^\/games\/([^\/]+)\/?$/);
+            
+            if (gameMatch) {
+                const gameName = gameMatch[1];
+                loadGame(gameName);
+            }
+        }
+
+        // Update URL without page reload
+        function updateURL(gameName) {
+            const newURL = `/games/${gameName}`;
+            window.history.pushState({ game: gameName }, '', newURL);
+        }
+
+        // Load Game Function
+        function loadGame(gameName) {
+            updateURL(gameName);
+            
+            const gamesList = document.getElementById('games-list');
+            const gameView = document.getElementById('gameView');
+            const gameTitle = document.getElementById('gameTitle');
+            const gameContainer = document.getElementById('gameContainer');
+            const gameControls = document.getElementById('gameControls');
+            
+            gamesList.style.display = 'none';
+            gameView.classList.add('active');
+            
+            switch(gameName) {
+                case 'snake':
+                    gameTitle.textContent = '🐍 Snake Game';
+                    loadSnakeGame(gameContainer, gameControls);
+                    break;
+                case 'memory':
+                    gameTitle.textContent = '🧠 Memory Match';
+                    loadMemoryGame(gameContainer, gameControls);
+                    break;
+                case 'tetris':
+                    gameTitle.textContent = '🟦 Block Drop';
+                    loadTetrisGame(gameContainer, gameControls);
+                    break;
+                case 'pong':
+                    gameTitle.textContent = '🏓 Pong';
+                    loadPongGame(gameContainer, gameControls);
+                    break;
+                case 'tictactoe':
+                    gameTitle.textContent = '❌⭕ Tic Tac Toe';
+                    loadTicTacToeGame(gameContainer, gameControls);
+                    break;
+                default:
+                    gameContainer.innerHTML = '<p>Game coming soon!</p>';
+                    gameControls.innerHTML = '';
+            }
+        }
+
+        // Back to Games
+        function backToGames() {
+            window.history.pushState({}, '', '/');
+            document.getElementById('gameView').classList.remove('active');
+            document.getElementById('games-list').style.display = 'block';
+        }
+
+        // Snake Game
+        function loadSnakeGame(container, controls) {
+            container.innerHTML = '<div class="snake-game" id="snakeGame"></div>';
+            controls.innerHTML = '<button class="game-btn" onclick="startSnakeGame()">Start Game</button>';
+            
+            window.startSnakeGame = function() {
+                const game = document.getElementById('snakeGame');
+                game.innerHTML = '';
+                
+                let snake = [{x: 10, y: 10}];
+                let food = {x: 15, y: 15};
+                let direction = {x: 0, y: 0};
+                let gameRunning = false;
+                
+                // Create grid
+                for (let i = 0; i < 400; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'snake-cell';
+                    cell.id = `cell-${i}`;
+                    game.appendChild(cell);
+                }
+                
+                function updateDisplay() {
+                    // Clear all cells
+                    for (let i = 0; i < 400; i++) {
+                        const cell = document.getElementById(`cell-${i}`);
+                        cell.className = 'snake-cell';
+                    }
+                    
+                    // Draw snake
+                    snake.forEach(segment => {
+                        const index = segment.y * 20 + segment.x;
+                        const cell = document.getElementById(`cell-${index}`);
+                        if (cell) cell.classList.add('snake');
+                    });
+                    
+                    // Draw food
+                    const foodIndex = food.y * 20 + food.x;
+                    const foodCell = document.getElementById(`cell-${foodIndex}`);
+                    if (foodCell) foodCell.classList.add('food');
+                }
+                
+                function moveSnake() {
+                    if (!gameRunning) return;
+                    
+                    const head = {x: snake[0].x + direction.x, y: snake[0].y + direction.y};
+                    
+                    // Check walls
+                    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+                        gameRunning = false;
+                        alert('Game Over! Score: ' + (snake.length - 1));
+                        return;
+                    }
+                    
+                    // Check self collision
+                    if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                        gameRunning = false;
+                        alert('Game Over! Score: ' + (snake.length - 1));
+                        return;
+                    }
+                    
+                    snake.unshift(head);
+                    
+                    // Check food
+                    if (head.x === food.x && head.y === food.y) {
+                        // Generate new food
+                        do {
+                            food = {
+                                x: Math.floor(Math.random() * 20),
+                                y: Math.floor(Math.random() * 20)
+                            };
+                        } while (snake.some(segment => segment.x === food.x && segment.y === food.y));
+                    } else {
+                        snake.pop();
+                    }
+                    
+                    updateDisplay();
+                }
+                
+                // Keyboard controls
+                document.addEventListener('keydown', (e) => {
+                    if (!gameRunning) {
+                        gameRunning = true;
+                        setInterval(moveSnake, 200);
+                    }
+                    
+                    switch(e.key) {
+                        case 'ArrowUp': if (direction.y === 0) direction = {x: 0, y: -1}; break;
+                        case 'ArrowDown': if (direction.y === 0) direction = {x: 0, y: 1}; break;
+                        case 'ArrowLeft': if (direction.x === 0) direction = {x: -1, y: 0}; break;
+                        case 'ArrowRight': if (direction.x === 0) direction = {x: 1, y: 0}; break;
+                    }
+                });
+                
+                updateDisplay();
+            };
+        }
+
+        // Memory Game
+        function loadMemoryGame(container, controls) {
+            const emojis = ['🎮', '🎯', '🎲', '🎪', '🎨', '🎭', '🎸', '🎺'];
+            let cards = [...emojis, ...emojis];
+            let flipped = [];
+            let matched = [];
+            
+            container.innerHTML = '<div class="memory-grid" id="memoryGrid"></div>';
+            controls.innerHTML = '<button class="game-btn" onclick="loadMemoryGame(document.getElementById(\'gameContainer\'), document.getElementById(\'gameControls\'))">New Game</button>';
+            
+            // Shuffle cards
+            cards.sort(() => Math.random() - 0.5);
+            
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                card.dataset.emoji = emoji;
+                card.onclick = function() {
+                    if (flipped.length < 2 && !this.classList.contains('flipped') && !this.classList.contains('matched')) {
+                        this.classList.add('flipped');
+                        this.textContent = emoji;
+                        flipped.push(this);
+                        
+                        if (flipped.length === 2) {
+                            setTimeout(() => {
+                                if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+                                    flipped.forEach(card => card.classList.add('matched'));
+                                    matched.push(...flipped);
+                                } else {
+                                    flipped.forEach(card => {
+                                        card.classList.remove('flipped');
+                                        card.textContent = '';
+                                    });
+                                }
+                                flipped = [];
+                                
+                                if (matched.length === cards.length) {
+                                    setTimeout(() => alert('Congratulations! You won!'), 500);
+                                }
+                            }, 1000);
+                        }
+                    }
+                };
+                document.getElementById('memoryGrid').appendChild(card);
+            });
+        }
+
+        // Tetris Game
+        function loadTetrisGame(container, controls) {
+            container.innerHTML = '<div class="tetris-game" id="tetrisGame"></div>';
+            controls.innerHTML = '<button class="game-btn" onclick="startTetrisGame()">Start Game</button>';
+            
+            window.startTetrisGame = function() {
+                const game = document.getElementById('tetrisGame');
+                game.innerHTML = '';
+                
+                // Create grid (10x20)
+                for (let i = 0; i < 200; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'tetris-cell';
+                    cell.id = `tetris-${i}`;
+                    game.appendChild(cell);
+                }
+                
+                // Simple tetris implementation
+                let board = Array(20).fill().map(() => Array(10).fill(0));
+                let currentPiece = {
+                    x: 4,
+                    y: 0,
+                    shape: [[1, 1], [1, 1]] // Square piece
+                };
+                
+                function drawBoard() {
+                    for (let y = 0; y < 20; y++) {
+                        for (let x = 0; x < 10; x++) {
+                            const index = y * 10 + x;
+                            const cell = document.getElementById(`tetris-${index}`);
+                            if (board[y][x] || (currentPiece && 
+                                y >= currentPiece.y && y < currentPiece.y + currentPiece.shape.length &&
+                                x >= currentPiece.x && x < currentPiece.x + currentPiece.shape[0].length &&
+                                currentPiece.shape[y - currentPiece.y][x - currentPiece.x])) {
+                                cell.classList.add('filled');
+                            } else {
+                                cell.classList.remove('filled');
+                            }
+                        }
+                    }
+                }
+                
+                function movePiece(dx, dy) {
+                    if (currentPiece) {
+                        currentPiece.x += dx;
+                        currentPiece.y += dy;
+                        
+                        // Simple boundary check
+                        if (currentPiece.x < 0) currentPiece.x = 0;
+                        if (currentPiece.x > 8) currentPiece.x = 8;
+                        if (currentPiece.y > 18) currentPiece.y = 18;
+                        
+                        drawBoard();
+                    }
+                }
+                
+                // Controls
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'ArrowLeft': movePiece(-1, 0); break;
+                        case 'ArrowRight': movePiece(1, 0); break;
+                        case 'ArrowDown': movePiece(0, 1); break;
+                    }
+                });
+                
+                drawBoard();
+            };
+        }
+
+        // Pong Game
+        function loadPongGame(container, controls) {
+            container.innerHTML = `
+                <div class="pong-game" id="pongGame">
+                    <div class="pong-paddle" id="leftPaddle" style="left: 10px; top: 160px;"></div>
+                    <div class="pong-paddle" id="rightPaddle" style="right: 10px; top: 160px;"></div>
+                    <div class="pong-ball" id="pongBall" style="left: 292px; top: 192px;"></div>
+                </div>
+            `;
+            controls.innerHTML = '<button class="game-btn" onclick="startPongGame()">Start Game</button>';
+            
+            window.startPongGame = function() {
+                const leftPaddle = document.getElementById('leftPaddle');
+                const rightPaddle = document.getElementById('rightPaddle');
+                const ball = document.getElementById('pongBall');
+                
+                let ballX = 292, ballY = 192;
+                let ballDX = 3, ballDY = 2;
+                let leftPaddleY = 160, rightPaddleY = 160;
+                let gameRunning = true;
+                
+                function updatePong() {
+                    if (!gameRunning) return;
+                    
+                    // Move ball
+                    ballX += ballDX;
+                    ballY += ballDY;
+                    
+                    // Ball collision with top/bottom
+                    if (ballY <= 0 || ballY >= 385) {
+                        ballDY = -ballDY;
+                    }
+                    
+                    // Ball collision with paddles
+                    if (ballX <= 25 && ballY >= leftPaddleY && ballY <= leftPaddleY + 80) {
+                        ballDX = -ballDX;
+                    }
+                    if (ballX >= 560 && ballY >= rightPaddleY && ballY <= rightPaddleY + 80) {
+                        ballDX = -ballDX;
+                    }
+                    
+                    // Score
+                    if (ballX < 0 || ballX > 600) {
+                        ballX = 292;
+                        ballY = 192;
+                        ballDX = -ballDX;
+                    }
+                    
+                    // Update positions
+                    ball.style.left = ballX + 'px';
+                    ball.style.top = ballY + 'px';
+                    
+                    // Simple AI for right paddle
+                    rightPaddleY = ballY - 40;
+                    if (rightPaddleY < 0) rightPaddleY = 0;
+                    if (rightPaddleY > 320) rightPaddleY = 320;
+                    rightPaddle.style.top = rightPaddleY + 'px';
+                    
+                    requestAnimationFrame(updatePong);
+                }
+                
+                // Left paddle controls
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowUp' && leftPaddleY > 0) {
+                        leftPaddleY -= 20;
+                        leftPaddle.style.top = leftPaddleY + 'px';
+                    }
+                    if (e.key === 'ArrowDown' && leftPaddleY < 320) {
+                        leftPaddleY += 20;
+                        leftPaddle.style.top = leftPaddleY + 'px';
+                    }
+                });
+                
+                updatePong();
+            };
+        }
+
+        // Tic Tac Toe Game
+        function loadTicTacToeGame(container, controls) {
+            container.innerHTML = '<div class="ttt-grid" id="tttGrid"></div>';
+            controls.innerHTML = '<button class="game-btn" onclick="loadTicTacToeGame(document.getElementById(\'gameContainer\'), document.getElementById(\'gameControls\'))">New Game</button>';
+            
+            let currentPlayer = 'X';
+            let board = Array(9).fill('');
+            let gameActive = true;
+            
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('button');
+                cell.className = 'ttt-cell';
+                cell.dataset.index = i;
+                cell.onclick = function() {
+                    if (gameActive && !this.textContent) {
+                        this.textContent = currentPlayer;
+                        this.classList.add(currentPlayer.toLowerCase());
+                        board[i] = currentPlayer;
+                        
+                        if (checkWinner()) {
+                            alert(`Player ${currentPlayer} wins!`);
+                            gameActive = false;
+                        } else if (board.every(cell => cell !== '')) {
+                            alert('It\'s a tie!');
+                            gameActive = false;
+                        } else {
+                            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                        }
+                    }
+                };
+                document.getElementById('tttGrid').appendChild(cell);
+            }
+            
+            function checkWinner() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                    [0, 4, 8], [2, 4, 6] // diagonals
+                ];
+                
+                return winPatterns.some(pattern => {
+                    const [a, b, c] = pattern;
+                    return board[a] && board[a] === board[b] && board[a] === board[c];
+                });
+            }
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', handleRouting);
+        
+        // Initial routing check
+        handleRouting();
+    </script>
+</body>
+</html>
